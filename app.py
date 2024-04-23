@@ -26,10 +26,6 @@ for j in [2016, 2020]:
         x = {'district': i, 'year': j, 'reppercent': reppercentvalue}
         dfffpres = pd.concat([dfffpres, pd.DataFrame([x])], ignore_index = True)
 
-        # Add in stylesheet
-#stylesheet = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-stylesheet = dbc.themes.BOOTSTRAP
-
 # Add in stylesheet
 #stylesheet = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 stylesheet = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -41,7 +37,8 @@ server = app.server
 # Set app layout
 app.layout = html.Div([
     
-    html.Hr(),
+    html.Div(html.Hr(),
+          style = {'backgroundColor': '#DDDDDD'}),   
 
     # Adding title
     html.Div(html.H1(
@@ -136,13 +133,10 @@ app.layout = html.Div([
         id = 'linechart',
         className = 'six columns')
         ),
-    ],
-
-    style = {'backgroundColor': '#DDDDDD'}
-
+    ]
     )
 
-# Define chained callback
+# Define chained callback for options of District Dropdown
 @callback(
     Output('districtdd', 'options'),
     Input('preshouseradio', 'value'))
@@ -153,6 +147,7 @@ def set_district_options(preshouseradio):
     else:
         return [{'label': html.Div(['District {}'.format(str(i))], style = {'font-size': 20}), 'value': i} for i in range (1,15)]
 
+# Define chained callback for default value of District Dropdown
 @callback(
     Output('districtdd', 'value'),
     Input('districtdd', 'options'))
@@ -244,6 +239,7 @@ def update_graph(yearradio, districtdd, preshouseradio):
                  }
         )
 
+    # Update layout of line chart
     fig3.update_layout(
         xaxis=dict(
             showline=False,
