@@ -14,7 +14,7 @@ df = pd.read_csv('data.csv')
 dfff = pd.read_csv('reppercent.csv')
 
 # Import district shapes
-shpfile = gpd.read_file('districts114.shp')
+shpfile = gpd.read_file('gadistricts.geojson')
 shapes = shpfile[shpfile['STATENAME'] == 'Georgia'].drop(columns = ['ID', 'STARTCONG', 'ENDCONG', 'DISTRICTSI', 'COUNTY', 'PAGE', 'LAW', 'NOTE', 'BESTDEC', 'FINALNOTE', 'RNOTE', 'LASTCHANGE', 'FROMCOUNTY']).reset_index(drop = True)
 
 # Make some data adjustments
@@ -236,4 +236,4 @@ def update_graph(yearradio, districtdd, preshouseradio):
 
 # Run app
 if __name__ == '__main__':
-    app.run_server(debug = True, port = 8049, jupyter_mode = 'tab')
+    app.run_server(debug = True)
