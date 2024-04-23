@@ -5,3 +5,4 @@ plotly.express
 plotly
 geopandas
 gunicorn
+dash_bootstrap_components

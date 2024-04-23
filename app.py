@@ -5,6 +5,7 @@ import plotly.express as px
 from dash import Dash,dash_table, dcc, html, Input, Output, callback
 import plotly as py
 import geopandas as gpd
+import dash_bootstrap_components as dbc
 
 # Import main data
 df = pd.read_csv('data.csv')
