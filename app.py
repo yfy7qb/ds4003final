@@ -29,8 +29,12 @@ for j in [2016, 2020]:
 #stylesheet = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 stylesheet = dbc.themes.BOOTSTRAP
 
+# Add in stylesheet
+#stylesheet = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+stylesheet = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
+
 # Set up app and sever
-app = Dash(__name__, external_stylesheets= ['https://codepen.io/chriddyp/pen/bWLwgP.css'])
+app = Dash(__name__, external_stylesheets= stylesheet)
 server = app.server
 
 # Set app layout
@@ -44,85 +48,109 @@ app.layout = html.Div([
         style = {'display': 'flex', 'justifyContent': 'center'}
         )),
 
-    html.Hr(),
-
     # Adding description
-    html.Div(html.P(children =
-        'This interactive dashboard, when fully functional, will allow for comparisons between 2016 and 2020 election data, and House and Presidential results, in the state of Georgia.'
-        )),
-
+    html.Div(html.H6(children =
+        'This interactive dashboard allows for comparisons between the 2016 and 2020 elections in the state of Georgia. This dashboard has four main graphs. The first is a map of the state of Georgia with house districts on it, allowing for a visual representation across the state of the House election results. The second is a pie chart of the results in the individual district requested for the year. The third is a histogram of votes by different types, to demonstrate which party\'s voters use different types of voting. The fourth is a line chart showing the change in voting over time in a given district.'
+        ),
+        style = {'padding': '20px', 'backgroundColor': '#DDDDDD'}),
+    
     html.Hr(),
+
+    html.Div([
 
     # Adding Radio Items for Year
-    html.Div(dcc.RadioItems(
-            id = 'yearradio',
-            options = [2016, 2020],
-            value =  2016,
-            inline = False,
-            className="four columns",
-            style = {
-                'display': 'flex',
-                'justifyContent': 'center'
-                }
-            )),
+        html.Div(
+            html.Div(
+                [(dbc.RadioItems(
+                    id = 'yearradio',
+                    className="btn-group",
+                    inputClassName="btn-check",
+                    labelClassName="btn btn-outline-primary",
+                    labelCheckedClassName="active",
+                    options=[
+                        {'label': html.Div([2016], style = {'font-size': 20}), 'value': 2016},
+                        {'label': html.Div([2020], style = {'font-size': 20}), 'value': 2020}
+                        ],
+                    value=2016
+                ))],
+                className = 'radio-group',
+                style = {'justifyContent': 'center'}
+            ),
+            className = 'four columns',
+            
+        ),
 
-    # Adding Dropdown for District
-    html.Div(dcc.Dropdown(
-            id = 'districtdd',
-            options = df['district'].unique(),
-            value =  'statewide',
-            multi = False,
-            className="four columns"
-            )),
+        # Adding Dropdown for District
+        html.Div(dcc.Dropdown(
+                id = 'districtdd',
+                options = df['district'].unique(),
+                value =  'statewide',
+                multi = False,
+                className="four columns"
+                ),
+                style = {'justifyContent': 'center'}),
 
-    # Adding Radio Items for Race
-    html.Div(dcc.RadioItems(
-            id = 'preshouseradio',
-            options=[
-                {'label': 'President', 'value': 'pres'},
-                {'label': 'House', 'value': 'house'}],
-            value =  'house',
-            inline = True,
-            className="four columns",
-            style = {'display': 'flex', 'justifyContent': 'center'}
-            )),
-
-    # Add space
-    html.Hr(),
+        # Adding Radio Items for Race
+        html.Div(
+            html.Div(
+                [(dbc.RadioItems(
+                    id = 'preshouseradio',
+                    className="btn-group",
+                    inputClassName="btn-check",
+                    labelClassName="btn btn-outline-primary",
+                    labelCheckedClassName="active",
+                    options=[
+                        {'label': html.Div(['President'], style = {'font-size': 20}), 'value': 'pres'},
+                        {'label': html.Div(['House'], style = {'font-size': 20}), 'value': 'house'}
+                        ],
+                    value='house'
+                ))],
+                className = 'radio-group'
+            ),
+            className = 'four columns',
+            style = {'justifyContent': 'center'}
+        )],
+    style = {'backgroundColor': '#DDDDDD', 'justifyContent': 'center'}
+    ),
 
     # Adding graphs
 
     html.Div(dcc.Graph(
         id = 'geo',
-        className = 'eight columns')),
+        className = 'eight columns')
+        ),
 
     html.Div(dcc.Graph(
         id = 'pie',
-        className = 'four columns')),
-
-    html.Hr(),
+        className = 'four columns'
+        )
+        ),
 
     html.Div(dcc.Graph(
         id = 'votingtypechart',
-        className = 'six columns')),
+        className = 'six columns')
+        ),
     
     html.Div(dcc.Graph(
         id = 'linechart',
-        className = 'six columns')),
-    
-    ]
+        className = 'six columns')
+        ),
+    ],
+
+    style = {'backgroundColor': '#DDDDDD'}
+
     )
 
 # Define chained callback
-@app.callback(
+@callback(
     Output('districtdd', 'options'),
     Input('preshouseradio', 'value'))
 def set_district_options(preshouseradio):
     # Generate options for the subcategory dropdown
     if preshouseradio == 'pres':
-        return [{'label': 'President', 'value': 0}]
+        return [{'label': html.Div(['President'], style = {'font-size': 20}), 'value': 0}]
     else:
-        return [{'label': 'District {}'.format(str(i)), 'value': i} for i in range(1, 15)]
+        return [{'label': html.Div(['District {}'.format(str(i))], style = {'font-size': 20}), 'value': i} for i in range (1,15)]
 
 @callback(
     Output('districtdd', 'value'),
@@ -235,4 +263,4 @@ def update_graph(yearradio, districtdd, preshouseradio):
 
 # Run app
 if __name__ == '__main__':
-    app.run_server(debug = True)
+    app.run_server(debug = True, port = 8052, jupyter_mode = 'tab')
